@@ -1,0 +1,1328 @@
+---
+title: "meta-analysis"
+output:
+  word_document: default
+  html_document: default
+date: "2025-06-13"
+---
+
+```{r setup, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+path <- '~/Desktop/sexcog/Figures/Meta-analysis/'
+```
+
+```{r }
+library(metafor)
+library(forestplot)
+library(dplyr)
+library(nlme)
+library(ggplot2)
+library(png)
+```
+
+```{r}
+load("~/Desktop/sexcog/Preprocessing/A4LEARN2025-06-15.RData")
+load("~/Desktop/sexcog/Preprocessing/HABS2025-06-15.RData")
+load("~/Desktop/sexcog/Preprocessing/WRAP2025-06-15.RData")
+
+A4_LEARN$SEX <- relevel(A4_LEARN$SEX, ref = "M")
+HABS$SEX <- relevel(HABS$SEX, ref = "M")
+WRAP$SEX <- relevel(WRAP$SEX, ref = "M")
+
+```
+
+# Model 1: sex x regional tau-PET x time
+
+```{r}
+# PACC ~ sex x Amygdala tau x time
+fit1_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+
+fit1_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit1_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+
+# PACC ~ sex x Parahippocampal tau x time
+fit2_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Entorhinal tau x time
+ 
+fit3_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_HABS <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+
+ 
+# PACC ~ sex x Fusiform tau x time
+ 
+fit4_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Inferior Temporal tau x time
+ 
+fit5_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_HABS <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Middle temporal tau x time
+ 
+fit6_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_HABS <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+```
+
+
+```{r}
+A4LEARN_models <- list(fit1_A4LEARN, fit2_A4LEARN, fit3_A4LEARN, fit4_A4LEARN, fit5_A4LEARN, fit6_A4LEARN)
+HABS_models <- list(fit1_HABS, fit2_HABS, fit3_HABS, fit4_HABS, fit5_HABS, fit6_HABS)
+WRAP_models <- list(fit1_WRAP, fit2_WRAP, fit3_WRAP, fit4_WRAP, fit5_WRAP, fit6_WRAP)
+cohorts <- list(A4LEARN_models, HABS_models, WRAP_models)
+study <- c("A4/LEARN", "HABS", "WRAP")
+models <- c("PACC ~ Sex x amygdala tau x time", "PACC ~ Sex x parahippocampal tau x time", "PACC ~ Sex x entorhinal tau x time", "PACC ~ Sex x fusiform tau x time", "PACC ~ Sex x inferior temporal tau x time", "PACC ~ Sex x middle temporal tau x time")
+```
+ 
+```{r}
+rbind_coefs <- as.data.frame(matrix(ncol=5, nrow=length(cohorts)*6))
+
+colnames(rbind_coefs) <- c('Study', 'Model', 'Estimate', 'SE', 'pval')	
+ 
+interaction_terms <- c(
+  "SEXF:scale(bl_Amyg):scale(pacc_time)",
+  "SEXF:scale(bl_Para):scale(pacc_time)",
+  "SEXF:scale(bl_EC):scale(pacc_time)",
+  "SEXF:scale(bl_Fus):scale(pacc_time)",
+  "SEXF:scale(bl_ITG):scale(pacc_time)",
+  "SEXF:scale(bl_MTG):scale(pacc_time)"
+)
+
+for (i in 1:length(cohorts)) {
+  for (j in 1:length(cohorts[[i]])) {
+    tmp <- summary(cohorts[[i]][[j]])[["tTable"]]
+    coef_name <- interaction_terms[j]
+
+    if (coef_name %in% rownames(tmp)) {
+      est <- tmp[coef_name, 1]
+      se <- tmp[coef_name, 2]
+      p <- tmp[coef_name, 5]
+    } else {
+      est <- NA
+      se <- NA
+      p <- NA
+    }
+
+    rbind_coefs[(i - 1) * 6 + j, 1] <- study[i]
+    rbind_coefs[(i - 1) * 6 + j, 2] <- models[j]
+    rbind_coefs[(i - 1) * 6 + j, 3] <- round(est, 6)
+    rbind_coefs[(i - 1) * 6 + j, 4] <- round(se, 6)
+    rbind_coefs[(i - 1) * 6 + j, 5] <- round(p, 6)
+  }
+}
+
+ 
+rbind_coefs[,1:2] <- sapply(rbind_coefs[,1:2], as.factor)
+rbind_coefs[,3:5] <- sapply(rbind_coefs[,3:5], as.numeric)
+```
+ 
+```{r}
+forest.plot <- function(Model, summary_lab){
+  forest.rma(Model,
+           slab = study, xlab = "Estimate (95% CI)", header = "Cohort",addpred = TRUE, order = study, lwd     = 2, cex = 1.3, xlim = c(-0.4, 0.3), at = seq(-0.25, 0.15, by = 0.1), mlab = summary_lab)
+}
+```
+
+ 
+# PACC ~ Sex x amygdala tau x time {.tabset}
+ 
+```{r, echo = FALSE}
+model1 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x amygdala tau x time"), 
+                method = "ML", 
+                test = "knha")
+p_txt <- sprintf("%.2f", model1$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+
+outfile <- file.path(path, "model1_amyg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model1, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x parahippocampal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model2 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x parahippocampal tau x time"), 
+                method = "ML", 
+                test = "knha")
+p_txt <- sprintf("%.2f", model2$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+summary(model2)
+outfile <- file.path(path, "model1_para.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model2, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x entorhinal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model3 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x entorhinal tau x time"), 
+                method = "ML", 
+                test = "knha")
+p_txt <- sprintf("%.2f", model3$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+summary(model3)
+
+outfile <- file.path(path, "model1_ec.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model3,summary_lab)        # draws onto the open device
+dev.off() 
+
+```
+
+# PACC ~ Sex x fusiform tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model4 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x fusiform tau x time"), 
+                method = "ML", 
+                test = "knha")
+p_txt <- sprintf("%.2f", model4$pval)
+p_txt <- ifelse(p_txt == "0.00", "<0.01", p_txt)
+summary_lab <- bquote("RE Model:p " * .(p_txt) * "")
+summary(model4)
+
+outfile <- file.path(path, "model1_fus.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model4, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x inferior temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model5 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x inferior temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model5)
+p_txt <- sprintf("%.2f", model2$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1_itg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model5, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x middle temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model6 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x middle temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model6)
+p_txt <- sprintf("%.2f", model6$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1_mtg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model6, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+
+# Model 1: sex x regional tau-PET x time (prospective only)
+
+```{r}
+A4_LEARN_pro <- A4_LEARN %>%
+  filter(pacc_time >=0 )
+HABS_pro <- HABS %>%
+  filter(pacc_time >=0 )
+WRAP_pro <- WRAP %>%
+  filter(pacc_time >=0 )
+
+# PACC ~ sex x Amygdala tau x time
+fit1_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN_pro, na.action = "na.omit", control = list(opt='optim'))
+
+fit1_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit1_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP_pro, na.action = "na.omit", control = list(opt='optim'))
+
+# PACC ~ sex x Parahippocampal tau x time
+fit2_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Entorhinal tau x time
+ 
+fit3_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_HABS <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP_pro, na.action = "na.omit", control = list(opt='optim'))
+
+ 
+# PACC ~ sex x Fusiform tau x time
+ 
+fit4_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Inferior Temporal tau x time
+ 
+fit5_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_HABS <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Middle temporal tau x time
+ 
+fit6_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_HABS <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS_pro, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP_pro, na.action = "na.omit", control = list(opt='optim'))
+```
+
+
+```{r}
+A4LEARN_models <- list(fit1_A4LEARN, fit2_A4LEARN, fit3_A4LEARN, fit4_A4LEARN, fit5_A4LEARN, fit6_A4LEARN)
+HABS_models <- list(fit1_HABS, fit2_HABS, fit3_HABS, fit4_HABS, fit5_HABS, fit6_HABS)
+WRAP_models <- list(fit1_WRAP, fit2_WRAP, fit3_WRAP, fit4_WRAP, fit5_WRAP, fit6_WRAP)
+cohorts <- list(A4LEARN_models, HABS_models, WRAP_models)
+study <- c("A4/LEARN", "HABS", "WRAP")
+models <- c("PACC ~ Sex x amygdala tau x time", "PACC ~ Sex x parahippocampal tau x time", "PACC ~ Sex x entorhinal tau x time", "PACC ~ Sex x fusiform tau x time", "PACC ~ Sex x inferior temporal tau x time", "PACC ~ Sex x middle temporal tau x time")
+```
+ 
+```{r}
+rbind_coefs <- as.data.frame(matrix(ncol=5, nrow=length(cohorts)*6))
+
+colnames(rbind_coefs) <- c('Study', 'Model', 'Estimate', 'SE', 'pval')	
+ 
+interaction_terms <- c(
+  "SEXF:scale(bl_Amyg):scale(pacc_time)",
+  "SEXF:scale(bl_Para):scale(pacc_time)",
+  "SEXF:scale(bl_EC):scale(pacc_time)",
+  "SEXF:scale(bl_Fus):scale(pacc_time)",
+  "SEXF:scale(bl_ITG):scale(pacc_time)",
+  "SEXF:scale(bl_MTG):scale(pacc_time)"
+)
+
+for (i in 1:length(cohorts)) {
+  for (j in 1:length(cohorts[[i]])) {
+    tmp <- summary(cohorts[[i]][[j]])[["tTable"]]
+    coef_name <- interaction_terms[j]
+
+    if (coef_name %in% rownames(tmp)) {
+      est <- tmp[coef_name, 1]
+      se <- tmp[coef_name, 2]
+      p <- tmp[coef_name, 5]
+    } else {
+      est <- NA
+      se <- NA
+      p <- NA
+    }
+
+    rbind_coefs[(i - 1) * 6 + j, 1] <- study[i]
+    rbind_coefs[(i - 1) * 6 + j, 2] <- models[j]
+    rbind_coefs[(i - 1) * 6 + j, 3] <- round(est, 6)
+    rbind_coefs[(i - 1) * 6 + j, 4] <- round(se, 6)
+    rbind_coefs[(i - 1) * 6 + j, 5] <- round(p, 6)
+  }
+}
+
+ 
+rbind_coefs[,1:2] <- sapply(rbind_coefs[,1:2], as.factor)
+rbind_coefs[,3:5] <- sapply(rbind_coefs[,3:5], as.numeric)
+```
+ 
+```{r}
+forest.plot <- function(Model, summary_lab){
+  forest.rma(Model,
+           slab = study, xlab = "Estimate (95% CI)", header = "Cohort",addpred = TRUE, order = study, lwd     = 2, cex = 1.3, xlim = c(-0.4, 0.3), at = seq(-0.25, 0.15, by = 0.1), mlab = summary_lab)
+}
+```
+
+ 
+# PACC ~ Sex x amygdala tau x time {.tabset}
+ 
+```{r, echo = FALSE}
+model1 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x amygdala tau x time"), 
+                method = "ML", 
+                test = "knha")
+p_txt <- sprintf("%.2f", model1$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+
+outfile <- file.path(path, "model1_amyg_pro.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model1, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x parahippocampal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model2 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x parahippocampal tau x time"), 
+                method = "ML", 
+                test = "knha")
+p_txt <- sprintf("%.2f", model2$pval)
+p_txt <- ifelse(p_txt == "0.00", "<0.01", p_txt)
+summary_lab <- bquote("RE Model:p " * .(p_txt) * "")
+summary(model2)
+outfile <- file.path(path, "model1_para_pro.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model2, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x entorhinal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model3 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x entorhinal tau x time"), 
+                method = "ML", 
+                test = "knha")
+p_txt <- sprintf("%.2f", model3$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+summary(model3)
+
+outfile <- file.path(path, "model1_ec_pro.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model3,summary_lab)        # draws onto the open device
+dev.off() 
+
+```
+
+# PACC ~ Sex x fusiform tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model4 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x fusiform tau x time"), 
+                method = "ML", 
+                test = "knha")
+p_txt <- sprintf("%.2f", model4$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+summary(model4)
+
+outfile <- file.path(path, "model1_fus_pro.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model4, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x inferior temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model5 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x inferior temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model5)
+p_txt <- sprintf("%.2f", model5$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+
+outfile <- file.path(path, "model1_itg_pro.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model5, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x middle temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model6 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x middle temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model6)
+p_txt <- sprintf("%.2f", model6$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1_mtg_pro.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model6, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# Model 1A: sex x regional tau-PET x time
+```{r}
+A4LEARN_models <- list(fit1_A4LEARN, fit2_A4LEARN, fit3_A4LEARN, fit4_A4LEARN, fit5_A4LEARN, fit6_A4LEARN)
+HABS_models <- list(fit1_HABS, fit2_HABS, fit3_HABS, fit4_HABS, fit5_HABS, fit6_HABS)
+WRAP_models <- list(fit1_WRAP, fit2_WRAP, fit3_WRAP, fit4_WRAP, fit5_WRAP, fit6_WRAP)
+cohorts <- list(A4LEARN_models, HABS_models, WRAP_models)
+study <- c("A4/LEARN", "HABS", "WRAP")
+models <- c("PACC ~ Sex x amygdala tau x time", "PACC ~ Sex x parahippocampal tau x time", "PACC ~ Sex x entorhinal tau x time", "PACC ~ Sex x fusiform tau x time", "PACC ~ Sex x inferior temporal tau x time", "PACC ~ Sex x middle temporal tau x time")
+```
+ 
+```{r}
+rbind_coefs <- as.data.frame(matrix(ncol=5, nrow=length(cohorts)*6))
+
+colnames(rbind_coefs) <- c('Study', 'Model', 'Estimate', 'SE', 'pval')	
+ 
+interaction_terms <- c(
+  "SEXF:scale(bl_Amyg):scale(pacc_time)",
+  "SEXF:scale(bl_Para):scale(pacc_time)",
+  "SEXF:scale(bl_EC):scale(pacc_time)",
+  "SEXF:scale(bl_Fus):scale(pacc_time)",
+  "SEXF:scale(bl_ITG):scale(pacc_time)",
+  "SEXF:scale(bl_MTG):scale(pacc_time)"
+)
+
+for (i in 1:length(cohorts)) {
+  for (j in 1:length(cohorts[[i]])) {
+    tmp <- summary(cohorts[[i]][[j]])[["tTable"]]
+    coef_name <- interaction_terms[j]
+
+    if (coef_name %in% rownames(tmp)) {
+      est <- tmp[coef_name, 1]
+      se <- tmp[coef_name, 2]
+      p <- tmp[coef_name, 5]
+    } else {
+      est <- NA
+      se <- NA
+      p <- NA
+    }
+
+    rbind_coefs[(i - 1) * 6 + j, 1] <- study[i]
+    rbind_coefs[(i - 1) * 6 + j, 2] <- models[j]
+    rbind_coefs[(i - 1) * 6 + j, 3] <- round(est, 6)
+    rbind_coefs[(i - 1) * 6 + j, 4] <- round(se, 6)
+    rbind_coefs[(i - 1) * 6 + j, 5] <- round(p, 6)
+  }
+}
+
+ 
+rbind_coefs[,1:2] <- sapply(rbind_coefs[,1:2], as.factor)
+rbind_coefs[,3:5] <- sapply(rbind_coefs[,3:5], as.numeric)
+```
+ 
+# PACC ~ Sex x amygdala tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model1 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x amygdala tau x time"), 
+                method = "ML", 
+                test = "knha")
+summary(model1)
+p_txt <- sprintf("%.2f", model1$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_amyg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model1, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x parahippocampal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model2 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x parahippocampal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model2)
+p_txt <- sprintf("%.2f", model2$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_para.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model2, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x entorhinal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model3 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x entorhinal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model3)
+p_txt <- sprintf("%.2f", model3$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_ec.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model3, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x fusiform tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model4 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x fusiform tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model4)
+p_txt <- sprintf("%.2f", model4$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_fus.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model4, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x inferior temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model5 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x inferior temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model5)
+p_txt <- sprintf("%.2f", model5$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_itg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model5, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x middle temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model6 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x middle temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model6)
+p_txt <- sprintf("%.2f", model6$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_mtg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model6, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+
+# Model 1A: sex x Aβ-CL x time
+
+```{r}
+# PACC ~ sex x Amygdala tau x time
+fit1_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+
+fit1_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit1_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+
+# PACC ~ sex x Parahippocampal tau x time
+fit2_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time)  + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time)  + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Entorhinal tau x time
+ 
+fit3_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_HABS <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+
+ 
+# PACC ~ sex x Fusiform tau x time
+ 
+fit4_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Inferior Temporal tau x time
+ 
+fit5_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_HABS <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Middle temporal tau x time
+ 
+fit6_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_HABS <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + SEX*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+```
+
+```{r}
+forest.plot <- function(Model, summary_lab){
+  forest.rma(Model,
+           slab = study, xlab = "Estimate (95% CI)", header = "Cohort",addpred = TRUE, order = study, lwd     = 2, cex = 1.3, xlim = c(-0.65, 0.5), at = seq(-0.4, 0.3, by = 0.1), mlab = summary_lab)
+}
+```
+
+```{r}
+A4LEARN_models <- list(fit1_A4LEARN, fit2_A4LEARN, fit3_A4LEARN, fit4_A4LEARN, fit5_A4LEARN, fit6_A4LEARN)
+HABS_models <- list(fit1_HABS, fit2_HABS, fit3_HABS, fit4_HABS, fit5_HABS, fit6_HABS)
+WRAP_models <- list(fit1_WRAP, fit2_WRAP, fit3_WRAP, fit4_WRAP, fit5_WRAP, fit6_WRAP)
+cohorts <- list(A4LEARN_models, HABS_models, WRAP_models)
+study <- c("A4/LEARN", "HABS", "WRAP")
+models <- c("PACC ~ Sex x amygdala tau x time", "PACC ~ Sex x parahippocampal tau x time", "PACC ~ Sex x entorhinal tau x time", "PACC ~ Sex x fusiform tau x time", "PACC ~ Sex x inferior temporal tau x time", "PACC ~ Sex x middle temporal tau x time")
+```
+ 
+```{r}
+rbind_coefs <- as.data.frame(matrix(ncol=5, nrow=length(cohorts)*6))
+
+colnames(rbind_coefs) <- c('Study', 'Model', 'Estimate', 'SE', 'pval')	
+ 
+interaction_terms <- c(
+  "SEXF:scale(pacc_time):scale(centiloid)",
+  "SEXF:scale(pacc_time):scale(centiloid)",
+  "SEXF:scale(pacc_time):scale(centiloid)",
+  "SEXF:scale(pacc_time):scale(centiloid)",
+  "SEXF:scale(pacc_time):scale(centiloid)",
+  "SEXF:scale(pacc_time):scale(centiloid)"
+)
+
+for (i in 1:length(cohorts)) {
+  for (j in 1:length(cohorts[[i]])) {
+    tmp <- summary(cohorts[[i]][[j]])[["tTable"]]
+    coef_name <- interaction_terms[j]
+
+    if (coef_name %in% rownames(tmp)) {
+      est <- tmp[coef_name, 1]
+      se <- tmp[coef_name, 2]
+      p <- tmp[coef_name, 5]
+    } else {
+      est <- NA
+      se <- NA
+      p <- NA
+    }
+
+    rbind_coefs[(i - 1) * 6 + j, 1] <- study[i]
+    rbind_coefs[(i - 1) * 6 + j, 2] <- models[j]
+    rbind_coefs[(i - 1) * 6 + j, 3] <- round(est, 6)
+    rbind_coefs[(i - 1) * 6 + j, 4] <- round(se, 6)
+    rbind_coefs[(i - 1) * 6 + j, 5] <- round(p, 6)
+  }
+}
+
+ 
+rbind_coefs[,1:2] <- sapply(rbind_coefs[,1:2], as.factor)
+rbind_coefs[,3:5] <- sapply(rbind_coefs[,3:5], as.numeric)
+```
+ 
+# PACC ~ Sex x amygdala tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model1 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x amygdala tau x time"), 
+                method = "ML", 
+                test = "knha")
+summary(model1)
+p_txt <- sprintf("%.2f", model1$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_amyg_ab.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model1, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x parahippocampal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model2 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x parahippocampal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model2)
+p_txt <- sprintf("%.2f", model2$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_para_ab.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model2, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x entorhinal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model3 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x entorhinal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model3)
+p_txt <- sprintf("%.2f", model3$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_ec_ab.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model3, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x fusiform tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model4 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x fusiform tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model4)
+p_txt <- sprintf("%.2f", model4$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_fus_ab.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model4, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x inferior temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model5 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x inferior temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model5)
+p_txt <- sprintf("%.2f", model5$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_itg_ab.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model5, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x middle temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model6 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x middle temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model6)
+p_txt <- sprintf("%.2f", model6$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1a_mtg_ab.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model6, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# Model 1B: sex x regional tau-PET x time
+
+```{r}
+# PACC ~ sex x Amygdala tau x time
+fit1_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+
+fit1_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit1_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+
+# PACC ~ sex x Parahippocampal tau x time
+fit2_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time)  + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time)  + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Entorhinal tau x time
+ 
+fit3_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_HABS <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+
+ 
+# PACC ~ sex x Fusiform tau x time
+ 
+fit4_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Inferior Temporal tau x time
+ 
+fit5_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_HABS <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Middle temporal tau x time
+ 
+fit6_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_HABS <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(pacc_time) + SEX*APOE*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+```
+
+
+```{r}
+A4LEARN_models <- list(fit1_A4LEARN, fit2_A4LEARN, fit3_A4LEARN, fit4_A4LEARN, fit5_A4LEARN, fit6_A4LEARN)
+HABS_models <- list(fit1_HABS, fit2_HABS, fit3_HABS, fit4_HABS, fit5_HABS, fit6_HABS)
+WRAP_models <- list(fit1_WRAP, fit2_WRAP, fit3_WRAP, fit4_WRAP, fit5_WRAP, fit6_WRAP)
+cohorts <- list(A4LEARN_models, HABS_models, WRAP_models)
+study <- c("A4/LEARN", "HABS", "WRAP")
+models <- c("PACC ~ Sex x amygdala tau x time", "PACC ~ Sex x parahippocampal tau x time", "PACC ~ Sex x entorhinal tau x time", "PACC ~ Sex x fusiform tau x time", "PACC ~ Sex x inferior temporal tau x time", "PACC ~ Sex x middle temporal tau x time")
+```
+ 
+```{r}
+rbind_coefs <- as.data.frame(matrix(ncol=5, nrow=length(cohorts)*6))
+
+colnames(rbind_coefs) <- c('Study', 'Model', 'Estimate', 'SE', 'pval')	
+ 
+interaction_terms <- c(
+  "SEXF:scale(bl_Amyg):scale(pacc_time)",
+  "SEXF:scale(bl_Para):scale(pacc_time)",
+  "SEXF:scale(bl_EC):scale(pacc_time)",
+  "SEXF:scale(bl_Fus):scale(pacc_time)",
+  "SEXF:scale(bl_ITG):scale(pacc_time)",
+  "SEXF:scale(bl_MTG):scale(pacc_time)"
+)
+
+for (i in 1:length(cohorts)) {
+  for (j in 1:length(cohorts[[i]])) {
+    tmp <- summary(cohorts[[i]][[j]])[["tTable"]]
+    coef_name <- interaction_terms[j]
+
+    if (coef_name %in% rownames(tmp)) {
+      est <- tmp[coef_name, 1]
+      se <- tmp[coef_name, 2]
+      p <- tmp[coef_name, 5]
+    } else {
+      est <- NA
+      se <- NA
+      p <- NA
+    }
+
+    rbind_coefs[(i - 1) * 6 + j, 1] <- study[i]
+    rbind_coefs[(i - 1) * 6 + j, 2] <- models[j]
+    rbind_coefs[(i - 1) * 6 + j, 3] <- round(est, 6)
+    rbind_coefs[(i - 1) * 6 + j, 4] <- round(se, 6)
+    rbind_coefs[(i - 1) * 6 + j, 5] <- round(p, 6)
+  }
+}
+
+ 
+rbind_coefs[,1:2] <- sapply(rbind_coefs[,1:2], as.factor)
+rbind_coefs[,3:5] <- sapply(rbind_coefs[,3:5], as.numeric)
+```
+ 
+```{r}
+forest.plot <- function(Model, summary_lab){
+  forest.rma(Model,
+           slab = study, xlab = "Estimate (95% CI)", header = "Cohort",addpred = TRUE, order = study, lwd     = 2, cex = 1.3, xlim = c(-0.4, 0.3), at = seq(-0.25, 0.15, by = 0.1), mlab = summary_lab)
+}
+```
+
+# PACC ~ Sex x amygdala tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model1 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x amygdala tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model1)
+p_txt <- sprintf("%.2f", model1$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1b_amyg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model1, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x parahippocampal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model2 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x parahippocampal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model2)
+p_txt <- sprintf("%.2f", model2$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1b_para.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model2, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x entorhinal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model3 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x entorhinal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model3)
+p_txt <- sprintf("%.2f", model3$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1b_ec.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model3, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x fusiform tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model4 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x fusiform tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model4)
+p_txt <- sprintf("%.2f", model4$pval)
+p_txt <- ifelse(p_txt == "0.00", "<0.01", p_txt)
+summary_lab <- bquote("RE Model:p " * .(p_txt) * "")
+outfile <- file.path(path, "model1b_fus.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model4, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x inferior temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model5 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x inferior temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model5)
+p_txt <- sprintf("%.2f", model5$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1b_itg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model5, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x middle temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model6 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x middle temporal tau x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model6)
+p_txt <- sprintf("%.2f", model6$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model1b_mtg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model6, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# Model 2: sex x regional tau-PET x Aβ-CL x time
+
+```{r}
+# PACC ~ sex x Amygdala tau x time
+fit1_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+
+fit1_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit1_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Amyg)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+
+# PACC ~ sex x Parahippocampal tau x time
+fit2_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit2_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Para)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Entorhinal tau x time
+ 
+fit3_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_HABS <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit3_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_EC)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+
+ 
+# PACC ~ sex x Fusiform tau x time
+ 
+fit4_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_HABS <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit4_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_Fus)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Inferior Temporal tau x time
+ 
+fit5_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_HABS <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit5_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_ITG)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+ 
+# PACC ~ sex x Middle temporal tau x time
+ 
+fit6_A4LEARN <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time) + QSVERSION + scale(Cumulative_Dose_Scaled), random =~ pacc_time | ID, data = A4_LEARN, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_HABS <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = HABS, na.action = "na.omit", control = list(opt='optim'))
+ 
+fit6_WRAP <- lme(scale(PACC) ~ SEX*scale(bl_MTG)*scale(centiloid)*scale(pacc_time) + scale(bl_tau_age)*scale(pacc_time) + scale(YrsEd)*scale(pacc_time), random =~ pacc_time | ID, data = WRAP, na.action = "na.omit", control = list(opt='optim'))
+```
+
+
+```{r}
+A4LEARN_models <- list(fit1_A4LEARN, fit2_A4LEARN, fit3_A4LEARN, fit4_A4LEARN, fit5_A4LEARN, fit6_A4LEARN)
+HABS_models <- list(fit1_HABS, fit2_HABS, fit3_HABS, fit4_HABS, fit5_HABS, fit6_HABS)
+WRAP_models <- list(fit1_WRAP, fit2_WRAP, fit3_WRAP, fit4_WRAP, fit5_WRAP, fit6_WRAP)
+cohorts <- list(A4LEARN_models, HABS_models, WRAP_models)
+study <- c("A4/LEARN", "HABS", "WRAP")
+models <- c("PACC ~ Sex x amygdala tau x Ab x time", "PACC ~ Sex x parahippocampal tau x Ab x time", "PACC ~ Sex x entorhinal tau x Ab x time", "PACC ~ Sex x fusiform tau x Ab x time", "PACC ~ Sex x inferior temporal tau x Ab x time", "PACC ~ Sex x middle temporal tau x Ab x time")
+```
+ 
+```{r}
+rbind_coefs <- as.data.frame(matrix(ncol=5, nrow=length(cohorts)*6))
+
+colnames(rbind_coefs) <- c('Study', 'Model', 'Estimate', 'SE', 'pval')	
+ 
+interaction_terms <- c(
+  "SEXF:scale(bl_Amyg):scale(centiloid):scale(pacc_time)",
+  "SEXF:scale(bl_Para):scale(centiloid):scale(pacc_time)",
+  "SEXF:scale(bl_EC):scale(centiloid):scale(pacc_time)",
+  "SEXF:scale(bl_Fus):scale(centiloid):scale(pacc_time)",
+  "SEXF:scale(bl_ITG):scale(centiloid):scale(pacc_time)",
+  "SEXF:scale(bl_MTG):scale(centiloid):scale(pacc_time)"
+)
+
+for (i in 1:length(cohorts)) {
+  for (j in 1:length(cohorts[[i]])) {
+    tmp <- summary(cohorts[[i]][[j]])[["tTable"]]
+    coef_name <- interaction_terms[j]
+
+    if (coef_name %in% rownames(tmp)) {
+      est <- tmp[coef_name, 1]
+      se <- tmp[coef_name, 2]
+      p <- tmp[coef_name, 5]
+    } else {
+      est <- NA
+      se <- NA
+      p <- NA
+    }
+
+    rbind_coefs[(i - 1) * 6 + j, 1] <- study[i]
+    rbind_coefs[(i - 1) * 6 + j, 2] <- models[j]
+    rbind_coefs[(i - 1) * 6 + j, 3] <- round(est, 6)
+    rbind_coefs[(i - 1) * 6 + j, 4] <- round(se, 6)
+    rbind_coefs[(i - 1) * 6 + j, 5] <- round(p, 6)
+  }
+}
+
+ 
+rbind_coefs[,1:2] <- sapply(rbind_coefs[,1:2], as.factor)
+rbind_coefs[,3:5] <- sapply(rbind_coefs[,3:5], as.numeric)
+```
+ 
+```{r}
+forest.plot <- function(Model, summary_lab){
+  forest.rma(Model,
+           slab = study, xlab = "Estimate (95% CI)", header = "Cohort",addpred = TRUE, order = study, lwd     = 2, cex = 1.3, xlim = c(-0.6, 0.6), at = seq(-0.5, 0.5, by = 0.1), mlab = summary_lab)
+}
+```
+
+# PACC ~ Sex x amygdala tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model1 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x amygdala tau x Ab x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model1)
+p_txt <- sprintf("%.2f", model1$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model2_amyg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model1, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x parahippocampal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model2 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x parahippocampal tau x Ab x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model2)
+p_txt <- sprintf("%.2f", model2$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model2_para.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model2, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x entorhinal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model3 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x entorhinal tau x Ab x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model3)
+p_txt <- sprintf("%.2f", model3$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model2_ec.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model3, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x fusiform tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model4 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x fusiform tau x Ab x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model4)
+p_txt <- sprintf("%.2f", model4$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model2_fus.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model4, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x inferior temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model5 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x inferior temporal tau x Ab x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model5)
+p_txt <- sprintf("%.2f", model5$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model2_itg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model5, summary_lab)        # draws onto the open device
+dev.off() 
+```
+
+# PACC ~ Sex x middle temporal tau x time {.tabset}
+ 
+```{r, echo = FALSE, fig.width=7, fig.height=5}
+model6 <- rma(yi = Estimate, 
+                sei = SE, 
+                data = subset(rbind_coefs, Model == "PACC ~ Sex x middle temporal tau x Ab x time"), 
+                method = "ML", 
+                test = "knha")
+ 
+summary(model6)
+p_txt <- sprintf("%.2f", model6$pval)
+summary_lab <- bquote("RE Model:p = " * .(p_txt) * "")
+outfile <- file.path(path, "model2_mtg.png")
+png(outfile, width = 20, height =14, units = "cm", res = 500)
+
+forest.plot(model6, summary_lab)        # draws onto the open device
+dev.off() 
+```
